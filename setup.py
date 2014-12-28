@@ -19,6 +19,7 @@ setup(name='coffer',
           'gevent',
           'zeroconf',
           'flask-appconfig',
+          'requests',
           'Flask'
       ],
       include_package_data=True,
