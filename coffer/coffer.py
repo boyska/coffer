@@ -96,7 +96,11 @@ def get_offers(args):
     peers = discover()
     for p in peers:
         base = 'http://%s:%s' % (socket.inet_ntoa(p.address), p.port)
-        r = requests.get('%s/offers' % base, timeout=5)
+        try:
+            r = requests.get('%s/offers' % base, timeout=5)
+        except:
+            logging.warning("Failure for %s" % base)
+            continue
         peer_offers = r.json()['offers']
         for offer_id in peer_offers:
             # TODO: if matches args.filter
