@@ -29,6 +29,7 @@ def get_parser():
     send_p.set_defaults(func=send_main)
     send_p.add_argument('file', nargs='+')
     send_p.add_argument('--one', action='store_true', default=False)
+    send_p.add_argument('--password', metavar='PASS', default=None)
     get_p = sub.add_parser('get', help="Receive files from the network")
     get_p.add_argument('--all', action='store_true', default=False)
     get_p.add_argument('--filter', metavar='REGEXP', default=None)
@@ -44,11 +45,19 @@ def send_main(args):
     app = create_app(args.file)
     if args.one:
         app.config['ONE'] = True
+    if args.password:
+        app.config['PASSWORD'] = args.password
     http_server = serve(app)
     address, port = http_server.address
     from avahi_utils import announce
     announce(address, port)
     gevent.wait(count=1)
+
+
+def get_auth(args):
+    if args.password is not None:
+        return ('user', args.password)
+    return None
 
 
 def get_offers(args):
@@ -57,11 +66,19 @@ def get_offers(args):
     for p in peers:
         base = 'http://%s:%s' % (socket.inet_ntoa(p.address), p.port)
         try:
-            r = requests.get('%s/offers' % base, timeout=5)
+            response = requests.get('%s/offers' % base, timeout=5,
+                                    auth=get_auth(args))
         except:
             logging.warning("Failure for %s" % base)
             continue
-        peer_offers = r.json()['offers']
+        if response.status_code == 401:
+            logging.warning('Wrong password for %s' % base)
+            continue
+        elif response.status_code != 200:
+            logging.warning('Failure (%d) for %s' %
+                            (response.status_code, base))
+            continue
+        peer_offers = response.json()['offers']
         for offer_id in peer_offers:
             # TODO: if matches args.filter
             url = '%s/offers/%s' % (base, offer_id)
@@ -70,10 +87,7 @@ def get_offers(args):
 
 
 def dl_offer(args, url):
-    auth = None
-    if args.password is not None:
-        auth = ('user', args.password)
-    return requests.get(url, auth=auth, timeout=5)
+    return requests.get(url, auth=get_auth(args), timeout=5)
 
 
 def get_main(args):
@@ -93,5 +107,7 @@ def get_main(args):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+    logging.getLogger('requests').setLevel(logging.ERROR)
     args = get_parser().parse_args()
     args.func(args)
