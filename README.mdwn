@@ -31,7 +31,7 @@ coffer get --all
 Installation
 ------------
 
-`python setup.py install` is enough.
+`pip install coffer` is enough
 
 Real-life examples
 ------------------

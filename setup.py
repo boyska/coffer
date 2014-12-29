@@ -9,7 +9,8 @@ def read(fname):
 
 setup(name='coffer',
       version='0.1',
-      description='Sending files in the same room should be easy as coffee',
+      description='Easily send and receive files in your LAN. '
+      'Without ever typing an IP address.',
       long_description=read('README.mdwn'),
       author='boyska',
       author_email='piuttosto@logorroici.org',
@@ -26,7 +27,7 @@ setup(name='coffer',
       zip_safe=False,
       classifiers=[
           "Framework :: Flask",
-          "License :: OSI Approved :: GNU General Public License v3",
+          "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
           "Operating System :: POSIX :: Linux",
           "Programming Language :: Python :: 2"
       ]
