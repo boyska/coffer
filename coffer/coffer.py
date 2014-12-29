@@ -1,6 +1,7 @@
 import sys
 import logging
 import socket
+import re
 
 import requests
 
@@ -31,10 +32,14 @@ def get_parser():
     send_p.add_argument('--one', action='store_true', default=False)
     send_p.add_argument('--password', metavar='PASS', default=None)
     get_p = sub.add_parser('get', help="Receive files from the network")
-    get_p.add_argument('--all', action='store_true', default=False)
-    get_p.add_argument('--filter', metavar='REGEXP', default=None)
+    get_p.add_argument('--filter', metavar='REGEXP', default='',
+                       help="regexp is matched against any filename. " +
+                       "It comes before --all")
+    get_p.add_argument('--all', action='store_true', default=False,
+                       help="Download every matching file, without asking")
     get_p.add_argument('--password', metavar='PASS', default=None)
-    get_p.add_argument('--cat', help='Output every downloaded offer',
+    get_p.add_argument('--cat',
+                       help='Output every downloaded offer, concatenated',
                        action='store_true', dest='cat', default=False)
     get_p.set_defaults(func=get_main)
 
@@ -80,10 +85,9 @@ def get_offers(args):
             continue
         peer_offers = response.json()['offers']
         for offer_id in peer_offers:
-            # TODO: if matches args.filter
             url = '%s/offers/%s' % (base, offer_id)
             logging.debug('Selecting %s as candidate' % url)
-            yield url
+            yield offer_id, url
 
 
 def dl_offer(args, url):
@@ -91,7 +95,11 @@ def dl_offer(args, url):
 
 
 def get_main(args):
-    offers = tuple(get_offers(args))
+    offers = [url for offer_id, url in get_offers(args)
+              if re.search(args.filter, offer_id)]
+    if not offers:
+        sys.stderr.write("No offers found\n")
+        return
     if args.all or len(offers) == 1:
         for url in offers:
             response = dl_offer(args, url)
@@ -103,6 +111,7 @@ def get_main(args):
                 # TODO: download!
                 raise NotImplementedError('--cat is the only implemented way')
     else:  # more than one offer, and no --all
+        print offers
         raise NotImplementedError('choose what you want')
 
 
