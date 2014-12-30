@@ -25,9 +25,13 @@ setup(name='coffer',
       ],
       include_package_data=True,
       zip_safe=False,
+      entry_points={
+          'console_scripts': ['coffer=coffer.coffer:main']
+      },
       classifiers=[
           "Framework :: Flask",
-          "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+          "License :: OSI Approved :: "
+          "GNU General Public License v3 or later (GPLv3+)",
           "Operating System :: POSIX :: Linux",
           "Programming Language :: Python :: 2"
       ]

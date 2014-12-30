@@ -115,8 +115,11 @@ def get_main(args):
         raise NotImplementedError('choose what you want')
 
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+def main():
+    logging.basicConfig(level=logging.WARN)
     logging.getLogger('requests').setLevel(logging.ERROR)
     args = get_parser().parse_args()
     args.func(args)
+
+if __name__ == '__main__':
+    main()
