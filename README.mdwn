@@ -20,13 +20,17 @@ coffer get --all
 
 * You can filter what to download with `--filter`
 * You can automatically exit after every file has been downloaded once, using `--one`
-* You can have passwords
+* You can have passwords (but they are not a great form of protection!)
 
 ### Non-features
 
 * This kind of sharing is not secure, is not anonymous, and won't be. Making it
   easy means announcing our service (not anonymous, therefore) and making it
-  simple for anyone to download (making it unsecure by definition)
+  simple means allowing anyone to download (making it unsecure by definition)
+
+### Known bugs
+
+* File download is still not implemented
 
 Installation
 ------------
@@ -88,3 +92,9 @@ coffer send =(gpg -a --export $(gpg --with-colons -K|egrep '^sec'|cut -d: -f 5|h
 coffer get --all --cat | gpg --import
 ```
 
+About the name
+--------------
+
+The main concept in `coffer` is that you are offering files to other people.
+Sharing is caring, and I like it. The other thing that I like so much is
+coffee. `coffer` is the sum of the best things in life.
