@@ -11,7 +11,7 @@ setup(name='coffer',
       version='0.2',
       description='Easily send and receive files in your LAN. '
       'Without ever typing an IP address.',
-      long_description=read('README.mdwn'),
+      long_description=read('README.rst'),
       author='boyska',
       author_email='piuttosto@logorroici.org',
       license='GPL3',
