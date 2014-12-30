@@ -94,6 +94,18 @@ def dl_offer(args, url):
     return requests.get(url, auth=get_auth(args), timeout=5)
 
 
+def handle_url(args, url):
+    response = dl_offer(args, url)
+    if response.status_code != 200:
+        logging.warning('Error downloading %s' % url)
+        return
+    if args.cat:
+        sys.stdout.write(response.text)
+    else:
+        # TODO: download!
+        raise NotImplementedError('--cat is the only implemented way')
+
+
 def get_main(args):
     offers = [url for offer_id, url in get_offers(args)
               if re.search(args.filter, offer_id)]
@@ -102,17 +114,14 @@ def get_main(args):
         return
     if args.all or len(offers) == 1:
         for url in offers:
-            response = dl_offer(args, url)
-            if response.status_code != 200:
-                logging.warning('Error downloading %s' % url)
-            if args.cat:
-                sys.stdout.write(response.text)
-            else:
-                # TODO: download!
-                raise NotImplementedError('--cat is the only implemented way')
+            handle_url(args, url)
     else:  # more than one offer, and no --all
-        print offers
-        raise NotImplementedError('choose what you want')
+        for i, offer in enumerate(offers):
+            print '[%d]\t%s' % (i, offer)
+        print 'Type the IDs you want to download, separated by spaces'
+        ids = map(int, raw_input().split())
+        for i in ids:
+            handle_url(args, offers[i])
 
 
 def main():
