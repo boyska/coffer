@@ -26,7 +26,7 @@ setup(name='coffer',
       include_package_data=True,
       zip_safe=False,
       entry_points={
-          'console_scripts': ['coffer=coffer.coffer:main']
+          'console_scripts': ['coffer=coffer.cli:main']
       },
       classifiers=[
           "Framework :: Flask",
