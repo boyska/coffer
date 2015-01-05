@@ -8,7 +8,7 @@ def read(fname):
         return buf.read()
 
 setup(name='coffer',
-      version='0.2',
+      version='0.3',
       description='Easily send and receive files in your LAN. '
       'Without ever typing an IP address.',
       long_description=read('README.rst'),
