@@ -26,6 +26,10 @@ def get_main(args):
     if not offers:
         sys.stderr.write("No offers found\n")
         return
+    if args.list_only:
+        for url in offers:
+            print(url)
+        sys.exit(0)
     if args.all or len(offers) == 1:
         for url in offers:
             handle_url(args, url)
@@ -60,15 +64,23 @@ def get_parser():
     send_p.add_argument('--one', action='store_true', default=False)
     send_p.add_argument('--password', metavar='PASS', default=None)
     get_p = sub.add_parser('get', help="Receive files from the network")
-    get_p.add_argument('--filter', metavar='REGEXP', default='',
-                       help="regexp is matched against any filename. " +
-                       "It comes before --all")
-    get_p.add_argument('--all', action='store_true', default=False,
-                       help="Download every matching file, without asking")
-    get_p.add_argument('--password', metavar='PASS', default=None)
-    get_p.add_argument('--cat',
-                       help='Output every downloaded offer, concatenated',
-                       action='store_true', dest='cat', default=False)
+    get_p.add_argument('--password', metavar='PASS', default=None,
+                       help="Provide password authentication")
+    sel = get_p.add_argument_group(
+        title='selection',
+        description="Which files should we consider?")
+    sel.add_argument('--filter', metavar='REGEXP', default='',
+                     help="filter to files whose filename matches REGEXP. "
+                     "It comes before --all")
+    sel.add_argument('--all', action='store_true', default=False,
+                     help="Download every matching file, without asking")
+    dl = get_p.add_argument_group(title="download",
+                                  description="File downloading handling")
+    dl.add_argument('--list-only', action='store_true', default=False,
+                    help="Don't download, just print urls")
+    dl.add_argument('--cat',
+                    help='Output every downloaded offer, concatenated',
+                    action='store_true', dest='cat', default=False)
     get_p.set_defaults(func=get_main)
 
     return p
