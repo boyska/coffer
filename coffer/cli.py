@@ -6,6 +6,7 @@ from __future__ import print_function
 import re
 import sys
 import logging
+import urllib
 
 import server
 import client
@@ -41,6 +42,9 @@ def get_main(args):
         for i in ids:
             handle_url(args, offers[i])
 
+def save_file(url):
+    response = urllib.URLopener()
+    response.retrieve(url,url.split('/')[-1])
 
 def handle_url(args, url):
     response = client.dl_offer(url, args.password)
@@ -51,7 +55,8 @@ def handle_url(args, url):
         sys.stdout.write(response.text)
     else:
         # TODO: download!
-        raise NotImplementedError('--cat is the only implemented way')
+        save_file(url)
+        # raise NotImplementedError('--cat is the only implemented way')
 
 
 def get_parser():
