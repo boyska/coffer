@@ -40,4 +40,4 @@ def get_offers(password=None):
 
 
 def dl_offer(url, password=None):
-    return requests.get(url, auth=get_auth(password), timeout=5)
+    return requests.get(url, auth=get_auth(password), timeout=5, stream=True)
